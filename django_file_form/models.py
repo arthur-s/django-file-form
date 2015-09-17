@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from django.core.files.storage import FileSystemStorage
+# from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.db import models
 from django.core.files import File
@@ -40,7 +40,7 @@ class UploadedFileManager(ModelManager):
 
 
 class UploadedFile(models.Model):
-    fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+    # fs = FileSystemStorage(location=settings.MEDIA_ROOT)
 
     created = models.DateTimeField(default=timezone.now)
     uploaded_file = models.FileField(max_length=255, upload_to='temp_uploads', storage=fs)
