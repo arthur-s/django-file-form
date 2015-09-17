@@ -43,7 +43,7 @@ class UploadedFile(models.Model):
     # fs = FileSystemStorage(location=settings.MEDIA_ROOT)
 
     created = models.DateTimeField(default=timezone.now)
-    uploaded_file = models.FileField(max_length=255, upload_to='temp_uploads', storage=fs)
+    uploaded_file = models.FileField(max_length=255, upload_to='temp_uploads')
     original_filename = models.CharField(max_length=255)
     field_name = models.CharField(max_length=255, null=True, blank=True)
     file_id = models.CharField(max_length=40)
