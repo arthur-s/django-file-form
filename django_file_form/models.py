@@ -1,4 +1,4 @@
-from pathlib import Path
+from path import path
 
 # from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -7,6 +7,10 @@ from django.core.files import File
 from django.utils import timezone
 
 from .util import ModelManager
+
+from django.utils.functional import LazyObject
+from django.utils.module_loading import import_string
+from . import conf
 
 
 class UploadedFileManager(ModelManager):
@@ -18,16 +22,16 @@ class UploadedFileManager(ModelManager):
                 if delete:
                     t.delete()
 
-                deleted_files.append(Path(t.uploaded_file.name).name)
+                deleted_files.append(path(t.uploaded_file.name).basename())
 
-        temp_path = Path(settings.MEDIA_ROOT).joinpath('temp_uploads')
+        temp_path = path(settings.MEDIA_ROOT).joinpath('temp_uploads')
 
-        for f in temp_path.iterdir():
-            basename = f.name
+        for f in temp_path.files():
+            basename = f.basename()
 
             if not self.get_for_file(basename):
                 if delete:
-                    f.unlink()
+                    f.remove()
 
                 deleted_files.append(basename)
 
@@ -39,11 +43,20 @@ class UploadedFileManager(ModelManager):
         )
 
 
+'''Use specific storage or FileSystemStorage by default'''
+def get_storage_class():
+    return import_string(conf.STORAGE)
+
+class Storage(LazyObject):
+    def _setup(self):
+        self._wrapped = get_storage_class()()
+
 class UploadedFile(models.Model):
     # fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+    fs = Storage(**conf.STORAGE_KWARGS)
 
     created = models.DateTimeField(default=timezone.now)
-    uploaded_file = models.FileField(max_length=255, upload_to='temp_uploads')
+    uploaded_file = models.FileField(max_length=255, upload_to='temp_uploads', storage=fs)
     original_filename = models.CharField(max_length=255)
     field_name = models.CharField(max_length=255, null=True, blank=True)
     file_id = models.CharField(max_length=40)
@@ -61,10 +74,7 @@ class UploadedFile(models.Model):
         super(UploadedFile, self).delete(using)
 
         if self.uploaded_file:
-            path = self.get_path()
-
-            if path.exists():
-                path.unlink()
+            self.get_path().remove_p()
 
     def must_be_deleted(self, now=None):
         now = now or timezone.now()
@@ -73,7 +83,7 @@ class UploadedFile(models.Model):
 
     def get_path(self):
         if self.uploaded_file:
-            return Path(self.uploaded_file.path)
+            return path(self.uploaded_file.path)
         else:
             return None
 
