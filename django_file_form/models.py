@@ -47,13 +47,9 @@ class UploadedFileManager(ModelManager):
 def get_storage_class():
     return import_string(conf.STORAGE)
 
-class Storage(LazyObject):
-    def _setup(self):
-        self._wrapped = get_storage_class()()
-
 class UploadedFile(models.Model):
     # fs = FileSystemStorage(location=settings.MEDIA_ROOT)
-    fs = Storage(**conf.STORAGE_KWARGS)
+    fs = get_storage_class()(**conf.STORAGE_KWARGS)
 
     created = models.DateTimeField(default=timezone.now)
     uploaded_file = models.FileField(max_length=255, upload_to='temp_uploads', storage=fs)
