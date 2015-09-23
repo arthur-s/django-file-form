@@ -37,6 +37,13 @@ INSTALLED_APPS = [
     'django_file_form.ajaxuploader',
 ]
 ```
+**2.1 Choose which storage to use**
+You can specify any storage where to upload (temporary) files.
+```
+FILE_FORM_STORAGE = 'app.storage.SomeStorage'
+FILE_FORM_STORAGE_KWARGS = {}
+```
+By default django-file-form uses the django's FileStorage.
 
 **3 Add the app to your urls**
 
