@@ -45,6 +45,7 @@ class AjaxFileUploader(object):
                 file_uploaded.send(sender=self.__class__, backend=backend, request=request)
 
             # callback - edited
+            extra_context = None
             if total_chunks == chunk_index +1:
                 extra_context = backend.upload_complete(request, filename, file_id, *args, **kwargs)
 
