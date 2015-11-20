@@ -61,10 +61,10 @@ class UploadedFile(models.Model):
     objects = UploadedFileManager()
 
     def __unicode__(self):
-        return unicode(self.original_filename or u'')
+        return self.original_filename or u''
 
     def __str__(self):
-        return str(self.original_filename or '')
+        return self.original_filename or ''
 
     def delete(self, using=None):
         super(UploadedFile, self).delete(using)

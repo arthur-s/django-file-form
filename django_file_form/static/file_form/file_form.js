@@ -51,6 +51,10 @@ function initFileUploader(options) {
                 form_id: options.form_id
             }
         },
+        chunking: {
+            enabled: true,
+            partSize: 5*1024*1024
+        },
         multiple: options.multiple,
         deleteFile: {
             enabled: true,
