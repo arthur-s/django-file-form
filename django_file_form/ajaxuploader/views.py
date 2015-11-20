@@ -39,17 +39,13 @@ class AjaxFileUploader(object):
                         or filename)
 
             backend.setup(filename, *args, **kwargs)
-            # success = backend.upload(upload, filename, False, *args, **kwargs)
-            success = True
-            backend.upload_chunk(upload, *args, **kwargs)
-
-            # if success:
-            #     file_uploaded.send(sender=self.__class__, backend=backend, request=request)
+            success = backend.upload_chunk(upload, *args, **kwargs)
 
             # callback - edited
             extra_context = None
             if total_chunks == chunk_index +1:
                 extra_context = backend.upload_complete(request, filename, file_id, *args, **kwargs)
+                # file_uploaded.send(sender=self.__class__, backend=backend, request=request)
 
             # let Ajax Upload know whether we saved it or not
             ret_json = {'success': success, 'filename': filename}

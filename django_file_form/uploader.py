@@ -20,7 +20,8 @@ class FileFormUploadBackend(LocalUploadBackend):
             uploaded_file='%s/%s' % (self.UPLOAD_DIR, filename),
             file_id=file_id,
             form_id=request.POST['form_id'],
-            original_filename=request.FILES['qqfile'].name,
+            # original_filename=request.FILES['qqfile'].name, # outputs blob
+            original_filename=request.POST['qqfilename'],
         )
 
         field_name = request.POST.get('field_name', None)
@@ -32,7 +33,6 @@ class FileFormUploadBackend(LocalUploadBackend):
         return result
 
     def update_filename(self, request, filename, *args, **kwargs):
-        # return uuid.uuid4().hex
         return request.POST['qquuid']
 
     def setup(self, filename, *args, **kwargs):
@@ -41,11 +41,16 @@ class FileFormUploadBackend(LocalUploadBackend):
             os.makedirs(os.path.realpath(os.path.dirname(self._path)))
         except:
             pass
-        # self._dest = BufferedWriter(FileIO(self._path, "w"))
-        self._dest = open(self._path, mode='ab')
+        self._dest = open(self._path, mode='ab') # append bytes mode
 
     def upload_chunk(self, chunk, *args, **kwargs):
-        self._dest.write(chunk.read())
+        try:
+            self._dest.write(chunk.read())
+        except:
+            return False
+        else:
+            return True
+        
 
 
 class FileFormUploader(AjaxFileUploader):
