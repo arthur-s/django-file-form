@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAll
 from django_file_form.ajaxuploader.backends.local import LocalUploadBackend
 from django_file_form.ajaxuploader.signals import file_uploaded
 
+from django.conf import settings
 
 class AjaxFileUploader(object):
     def __init__(self, backend=None, **kwargs):
@@ -48,9 +49,14 @@ class AjaxFileUploader(object):
                 # file_uploaded.send(sender=self.__class__, backend=backend, request=request)
 
             # let Ajax Upload know whether we saved it or not
-            ret_json = {'success': success, 'filename': filename}
+            if settings.DEBUG:
+                ret_json = {'success': success, 'filename': filename}
+            else:
+                ret_json = {'success': success}
+            
             if extra_context is not None:
-                ret_json.update(extra_context)
+                if settings.DEBUG:
+                    ret_json.update(extra_context)
 
             # although "application/json" is the correct content type, IE throws a fit
             return HttpResponse(json.dumps(ret_json, cls=DjangoJSONEncoder), content_type='text/html; charset=utf-8')
