@@ -16,8 +16,6 @@ class FileFormUploadBackend(LocalUploadBackend):
     def upload_complete(self, request, filename, file_id, *args, **kwargs):
         result = super(FileFormUploadBackend, self).upload_complete(request, filename, file_id, *args, **kwargs)
 
-        self._file.close()
-
         values = dict(
             uploaded_file='%s/%s' % (self.UPLOAD_DIR, filename),
             file_id=file_id,
@@ -44,10 +42,10 @@ class FileFormUploadBackend(LocalUploadBackend):
         except:
             pass
         # self._dest = BufferedWriter(FileIO(self._path, "w"))
-        self._file = open(self._path, mode='ab')
+        self._dest = open(self._path, mode='ab')
 
     def upload_chunk(self, chunk, *args, **kwargs):
-        self._file.write(chunk.read())
+        self._dest.write(chunk.read())
 
 
 class FileFormUploader(AjaxFileUploader):

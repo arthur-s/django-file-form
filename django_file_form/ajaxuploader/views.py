@@ -40,6 +40,7 @@ class AjaxFileUploader(object):
 
             backend.setup(filename, *args, **kwargs)
             # success = backend.upload(upload, filename, False, *args, **kwargs)
+            success = True
             backend.upload_chunk(upload, *args, **kwargs)
 
             # if success:
