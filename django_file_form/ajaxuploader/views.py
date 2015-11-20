@@ -37,12 +37,13 @@ class AjaxFileUploader(object):
             # custom filename handler
             filename = (backend.update_filename(request, filename, *args, **kwargs)
                         or filename)
-            # save the file
-            backend.setup(filename, *args, **kwargs)
-            success = backend.upload(upload, filename, False, *args, **kwargs)
 
-            if success:
-                file_uploaded.send(sender=self.__class__, backend=backend, request=request)
+            backend.setup(filename, *args, **kwargs)
+            # success = backend.upload(upload, filename, False, *args, **kwargs)
+            backend.upload_chunk(upload, *args, **kwargs)
+
+            # if success:
+            #     file_uploaded.send(sender=self.__class__, backend=backend, request=request)
 
             # callback - edited
             extra_context = None

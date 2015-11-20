@@ -12,8 +12,11 @@ from . import conf
 class FileFormUploadBackend(LocalUploadBackend):
     UPLOAD_DIR = 'temp_uploads'
 
+
     def upload_complete(self, request, filename, file_id, *args, **kwargs):
         result = super(FileFormUploadBackend, self).upload_complete(request, filename, file_id, *args, **kwargs)
+
+        self._file.close()
 
         values = dict(
             uploaded_file='%s/%s' % (self.UPLOAD_DIR, filename),
@@ -33,6 +36,18 @@ class FileFormUploadBackend(LocalUploadBackend):
     def update_filename(self, request, filename, *args, **kwargs):
         # return uuid.uuid4().hex
         return request.POST['qquuid']
+
+    def setup(self, filename, *args, **kwargs):
+        self._path = self.get_path(filename, *args, **kwargs)
+        try:
+            os.makedirs(os.path.realpath(os.path.dirname(self._path)))
+        except:
+            pass
+        # self._dest = BufferedWriter(FileIO(self._path, "w"))
+        self._file = open(self._path, mode='ab')
+
+    def upload_chunk(self, chunk, *args, **kwargs):
+        self._file.write(chunk.read())
 
 
 class FileFormUploader(AjaxFileUploader):
