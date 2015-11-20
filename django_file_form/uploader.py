@@ -31,7 +31,8 @@ class FileFormUploadBackend(LocalUploadBackend):
         return result
 
     def update_filename(self, request, filename, *args, **kwargs):
-        return uuid.uuid4().hex
+        # return uuid.uuid4().hex
+        return request.POST['qquuid']
 
 
 class FileFormUploader(AjaxFileUploader):

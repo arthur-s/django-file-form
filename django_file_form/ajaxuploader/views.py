@@ -23,6 +23,11 @@ class AjaxFileUploader(object):
             if not upload:
                 return HttpResponseBadRequest("AJAX request not valid")
 
+            # get chunks
+            chunk_index = int(request.POST.get('qqpartindex'))
+            total_chunks = int(request.POST.get('qqtotalparts'))
+
+
             filename = upload.name
 
             file_id = request.POST['qquuid']
@@ -39,8 +44,9 @@ class AjaxFileUploader(object):
             if success:
                 file_uploaded.send(sender=self.__class__, backend=backend, request=request)
 
-            # callback
-            extra_context = backend.upload_complete(request, filename, file_id, *args, **kwargs)
+            # callback - edited
+            if total_chunks == chunk_index +1:
+                extra_context = backend.upload_complete(request, filename, file_id, *args, **kwargs)
 
             # let Ajax Upload know whether we saved it or not
             ret_json = {'success': success, 'filename': filename}
