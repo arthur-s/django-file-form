@@ -9,6 +9,7 @@ from .models import UploadedFile
 from . import conf
 
 
+
 class FileFormUploadBackend(LocalUploadBackend):
     UPLOAD_DIR = 'temp_uploads'
 
@@ -22,6 +23,7 @@ class FileFormUploadBackend(LocalUploadBackend):
             form_id=request.POST['form_id'],
             # original_filename=request.FILES['qqfile'].name, # outputs blob
             original_filename=request.POST['qqfilename'],
+            hostname=conf.HOSTNAME,
         )
 
         field_name = request.POST.get('field_name', None)
