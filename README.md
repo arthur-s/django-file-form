@@ -17,7 +17,9 @@ Features:
 
 The project is hosted on [github](https://github.com/mbraak/django-file-form).
 
-Works with Django 1.7 - 1.9.
+Works with Django 1.8 - 1.10.
+
+Note that version 0.1.7 also supports Django 1.7.
 
 ## Usage
 
@@ -128,7 +130,7 @@ class ExampleFormView(generic.FormView):
     def form_valid(self, form):
         input_file = form.cleaned_data['input_file']
 
-        self.delete_temporary_files()
+        form.delete_temporary_files()
 
         return super(ExampleFormView, self).form_valid(form)
 ```

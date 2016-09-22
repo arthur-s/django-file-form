@@ -1,5 +1,6 @@
-# from path import path
 from pathlib import Path
+
+from six import python_2_unicode_compatible
 
 # from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -23,16 +24,16 @@ class UploadedFileManager(ModelManager):
                 if delete:
                     t.delete()
 
-                deleted_files.append(Path(t.uploaded_file.name).basename())
+                deleted_files.append(Path(t.uploaded_file.name).name)
 
         temp_path = Path(settings.MEDIA_ROOT).joinpath('temp_uploads')
 
-        for f in temp_path.files():
-            basename = f.basename()
+        for f in temp_path.iterdir():
+            basename = f.name
 
             if not self.get_for_file(basename):
                 if delete:
-                    f.remove()
+                    f.unlink()
 
                 deleted_files.append(basename)
 
@@ -48,6 +49,7 @@ class UploadedFileManager(ModelManager):
 def get_storage_class():
     return import_string(conf.STORAGE)
 
+@python_2_unicode_compatible
 class UploadedFile(models.Model):
     # fs = FileSystemStorage(location=settings.MEDIA_ROOT)
     fs = get_storage_class()(**conf.STORAGE_KWARGS)
@@ -62,11 +64,9 @@ class UploadedFile(models.Model):
 
     objects = UploadedFileManager()
 
-    def __unicode__(self):
-        return self.original_filename or u''
 
     def __str__(self):
-        return self.original_filename or ''
+        return str(self.original_filename or '')
 
     def delete(self, using=None):
         super(UploadedFile, self).delete(using)
